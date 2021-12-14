@@ -32,6 +32,32 @@ namespace XmlParser
             };
             settings.ValidationEventHandler += new ValidationEventHandler(SchemaValidationEventHandler);
 
+            //XPath
+            XmlDocument xDoc = new XmlDocument();
+            xDoc.Load("Candies.xml");
+            XmlElement xRoot = xDoc.DocumentElement;
+
+            Console.WriteLine("XPath Result: List of Productions");
+
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xDoc.NameTable);
+            nsmgr.AddNamespace("c", "http://www.mydomain/candies");
+            XmlNodeList childnodes = xRoot.SelectNodes("//c:production", nsmgr);
+
+            var productions = new List<string>();
+            foreach (XmlNode n in childnodes)
+            {
+                productions.Add(n.InnerText);
+            }
+            var uniqueProductions = productions.Distinct().ToList();
+
+            foreach (var p in uniqueProductions)
+            {
+                Console.WriteLine(p);
+            }
+
+            Console.WriteLine("End of XPath Result\n");
+            Console.ReadKey();
+
             using var input = new StreamReader(XmlPath);
             using XmlReader reader = XmlReader.Create(input, settings);
             XmlSerializer serializer = new XmlSerializer(typeof(Candies));
